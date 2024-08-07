@@ -1,4 +1,4 @@
-1. query 수정 : insert 한 row의 id 를 반환받고자 할 경우
+### 1. query 수정 : insert 한 row의 id 를 반환받고자 할 경우
 ```xml
 <!-- 기존 -->
 <insert id="insert">/* admin_info.insert */
@@ -15,10 +15,15 @@
     values (#{loginid}, #{passwd}, #{name}, #{ip}, #{phone}, #{email}, #{admin}, #{groupId}, #{part})
     RETURNING id;
 </select >
+
+<!--  returning 의 경우 postgres 에서만 지원하는 문법으로 returning  말고 select key 를 사용-->
+<selectKey keyProperty="id" resultType="java.lang.Integer">
+      select currval('s_pcscan_report_id')
+</selectKey>
 ```
 
 
-2. ibatis to mybatis
+### 2. ibatis to mybatis : enum
 ```xml
 <!-- mybatis enum 제거 -->
 <!-- ## [ibatis] -->
@@ -38,4 +43,16 @@
                 <if test='item.type.name() != "EXPR"'> #{item.value} </if>
         </foreach>
 </sql>
+```
+
+### 3. 조건문
+```xml
+<!-- ibatis -->
+<isEqual property="noSave" compareValue="false">
+</isEqual>
+
+
+<!-- mybatis -->
+<if test="noSave == false">
+</if>
 ```
