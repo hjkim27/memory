@@ -20,3 +20,32 @@ public static RestTemplate restTemplate(){
     return restTemplate;
 }
 ```
+2. connection 갯수 제한 필요 =====
+```java
+// 기존
+private static RestTemplate restTemplate = new RestTemplate();
+
+// 수정
+@Bean
+private static RestTemplate restTemplate(){
+  try {
+      logger.info("restTemplate Settings");
+
+      // timeout 시간 설정 추가
+      HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+      factory.setConnectTimeout(10*1000);
+      factory.setReadTimeout(10*1000);
+
+     // connectionPool 갯수 제한
+      HttpClient client = HttpClientBuilder.create().setMaxConnTotal(50).setMaxConnPerRoute(20).build();
+      factory.setHttpClient(client);
+
+      RestTemplate restTemplate = new RestTemplate(factory);
+      return restTemplate;
+  } catch (Exception e){
+      logger.error("restTemplate connectionTimeout, readTimeout setting fail!!!");
+      return new RestTemplate();
+  }
+}
+
+```
