@@ -5,14 +5,15 @@
 version: '3'
  
  services:
-   pv-api:
+   pv-api-userport:
      image: openjdk:11.0-jdk-slim
+     container_name: pv-api-userport
      environment:
        - LC_ALL=C.UTF-8
        - TZ=Asia/Seoul
        - LC_COLLATE=C
-       - server.port=2013
-       - spring.datasource.hikari.jdbc-url=jdbc:postgresql://127.0.0.1/privacycenter_4
+       - server.port=port
+       - spring.datasource.hikari.jdbc-url=jdbc:postgresql://127.0.0.1/privacycenter_private
      restart: always
      volumes:
          - $PWD/:/usr/local/privacycenter/
@@ -69,6 +70,9 @@ FILE_NAME=pv_${PORT}.yml
 cp $API_ORIGIN_FILE ${API_ROOT}${FILE_NAME}
 sed -i "s/server.port=port/server.port=${PORT}/g" ${FILE_NAME}
 sed -i "s/privacycenter_private/${DATABASE_NAME}/g"  ${FILE_NAME}
+## api 서버별 명칭 수정을 위함
+sed -i "s/pv-api-userport/pv-api${SERVER_PORT}/g"  ${FILE_NAME}
+
 
 docker_compose -f ${FILE_NAME} up -d
 
