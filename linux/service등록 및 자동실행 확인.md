@@ -50,9 +50,10 @@
     ```
 
 ## 서비스 상태 확인 (아래 중 하나 실행)
-1) systemctl -t service list-unit-files    -- 현재 구동되는 서비스 목록 확인
+1) systemctl -t service list-unit-files
+    - 현재 구동되는 서비스 목록 확인
 2) systemctl status ${service name}.service
-\>> service 가 disabled 되어있을 경우 서버 재시작 시 재시작되지 않음.
+    - service 가 disabled 되어있을 경우 서버 재시작 시 재시작되지 않음.
 
 ### enable 처리
 ```bash
