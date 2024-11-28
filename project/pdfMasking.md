@@ -25,3 +25,39 @@
     - 호출/응답 방식
     - 특정 데이터에 대한 구분이 불가능할 경우 전체 데이터 반환 요청
     - 마스킹의 경우 ...? 뭔가 말 했는데 정확히 못알아들음. 추가 확인 필요  
+
+## 개발방향
+
+1. PDF 파일 내부의 텍스트 추출 기능   
+`List<String> getText(File pdfFile)   `
+    - Pdf파일 업로드   
+    - text 정보 추출   
+    - 추출된 정보 반환  
+    pdfFile : 전자증명서 pdf 파일   
+    returnType : 추출정보가 담긴 List 객체
+
+2. 추출된 텍스트에 대해 알고리즘을 이용해 정보 제공이 필요한 데이터를 검색/식별하는 기능   
+`Map<String, List<String>> getText(File pdfFile, Set type)`
+    - A와 동일한 진행 방식   
+    pdfFile : 전자증명서 pdf 파일   
+    type : 정보 제공이 필요한 데이터 키 값(어떤 키 값인지 몰라서 set으로 임의로 넣어두었음)   
+        ** 추출된 텍스트에서 각 데이터가 구분이 가능한지 확인이 필요. number, name, address 등 (테스트 확인 후 재전달 예정)    
+    returnType : 데이터키값을 key, 추출정보가 담긴 List 객체를 value로 하는 Map 객체
+
+3. 발급자 기본정보를 식별하여 이를 마스킹(치환) 한 후 PDF파일을 재 조립 (저장)  하는 기능   
+    `maskingPDFText(File pdfFile)`   
+    - Pdf 파일 업로드   
+    - text 정보 추출   
+    - 추출된 정보 중 주민등록번호 정규식에 일치하는 정보 마스킹 처리
+    - 수정된 pdf파일 반환(byte 혹은 file 로 반환 예정)   
+    pdfFile : 전자증명서 pdf 파일   
+    returnType : byte[] 혹은 File   
+    ** 주민등록번호에 대한 마스킹만 전달받은 상태로 다른 개인정보에 대해서는 고려하지 않음.
+
+4. 기존 Java Web application 에서 사용가능한 형태의 라이브러리로 패키징
+    - Jar 파일로 제공 예정.
+    - 고객사 프로젝트에 depencency 추가, 메서드 호출로 사용하면 됨
+
+5. 외부 Java 요청에 대해 정상 처리 여부 테스트 진행
+    - 파일 업로드만 가능한 web페이지 제작 후 jar 파일 테스트를 진행할 예정.   
+    ** 사내 테스트를 위해서 os 정보 요청드렸었습니다. 이 과정에서 고객사에서 restAPI호출방식이라는 혼동이 있었던 것 같음
