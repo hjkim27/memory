@@ -13,9 +13,6 @@ public class DataApi {
 	private static final String BOUNDARY = "WebKitFormBoundary7MA4YWxkTrZu0gW";
 	private static final String LINE = "\r\n";
 	
-	private static PrintWriter writer = null;
-	private static OutputStream out = null;
-	
 	static String result = "";
 	
 	public String run(String url, List<File> fileList) throws IOException {
@@ -47,37 +44,39 @@ public class DataApi {
 		conn.setRequestProperty("Cache-Control", "no-cache");
 		/* 설정 끝 --------------------- */
 
-		out = conn.getOutputStream();
-		writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true);
-		
-		try {
+		try (
+			OutputStream out = conn.getOutputStream();
+		){
 			/* 이미지 첨부 시작 --- */
-			// body data ----------
-			addFile(file);
-
-			writer.append("--").append(boundary).append("--").append(LINE);
-			writer.close();
+			try(
+				OutputStreamWriter outWriter = new OutputStreamWriter(out, "UTF-8");
+				PrintWriter writer = new PrintWriter(outWriter, true)
+			){
+				for(File file :  fileList){
+					addFile(file);
+				}
+				writer.append("--").append(boundary).append("--").append(LINE);
+			}
 			/* 이미지첨부 끝 ---- */
-
 
 			// 응답확인 -------------
 			int responseCode = ((HttpURLConnection) conn).getResponseCode();
-			
-			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-			String inputLine = "";
-			StringBuffer responseStr = new StringBuffer();
-			while((inputLine = reader.readLine())!= null) {
-				responseStr.append(inputLine);
-			}
-			reader.close();
-			try {
+			try(
+				InputStreamReader isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
+				BufferedReader br = new BufferedReader(isr);
+			){
+				String inputLine = "";
+				StringBuffer responseStr = new StringBuffer();
+				while((inputLine = reader.readLine())!= null) {
+					responseStr.append(inputLine);
+				}
 				result = responseStr.toString();
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
 			}
-		} catch (Exception e) {
+			// 응답확인 끝 -------------
+
+		} catch(Exception e){
 			log.error(e.getMessage(), e);
-		}  
+		}
 		return result;
 	}
     
@@ -103,15 +102,16 @@ public class DataApi {
         writer.append(LINE);
         writer.flush();
          
-        FileInputStream inputStream = new FileInputStream(_file);
-        byte[] buffer = new byte[(int)_file.length()];
-        int bytesRead = -1;
-        while((bytesRead = inputStream.read(buffer)) != -1){
-            out.write(buffer, 0, bytesRead);
-        }
-        out.flush();
-        inputStream.close();
-         
+		try (
+			FileInputStream inputStream = new FileInputStream(_file);
+		) {
+			byte[] buffer = new byte[(int)_file.length()];
+			int bytesRead = -1;
+			while((bytesRead = inputStream.read(buffer)) != -1){
+				out.write(buffer, 0, bytesRead);
+			}
+			out.flush();
+		}
         writer.append(LINE).flush();
     }
 }
