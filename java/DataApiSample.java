@@ -1,28 +1,40 @@
 package sample.api;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-@Slf4j
-public class DataApiSample {
+@slf4j
+public class DataApi {
 
-
-	// 결과값을 받을 변수
-	String result = "";
+	private static final String BOUNDARY = "WebKitFormBoundary7MA4YWxkTrZu0gW";
+	private static final String LINE = "\r\n";
+	
+	private static PrintWriter writer = null;
+	private static OutputStream out = null;
+	
+	static String result = "";
+	
+	public String run(String url, List<File> fileList) throws IOException {
+		return run(url, BOUNDARY, fileList);
+	}
 
 	/**
-	 *
-	 * @param url 		호출url		http://192.168.100.144:8096/api/v3/imei/ocr
-	 * @param boundary	boundary	WebKitFormBoundary7MA4YWxkTrZu0gW
-	 * @param fileList	첨부이미지목록
+	 * <pre>
+	 *   HttpUrlConnection을 사용한 restAPI
+	 * </pre>
+	 * 
+	 * @param url 		api url
+	 * @param boundary	구분자
+	 * @param fileList	전달 파일 목록
+	 * @return
+	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public void run(String url, String boundary, List<File> fileList) throws IOException {
+	public String run(String url, String boundary, List<File> fileList) throws MalformedURLException, IOException {
 
 		/* HttpURLConnection생성 및 설정 */
 		URLConnection conn = (HttpURLConnection) new URL(url).openConnection();
@@ -31,54 +43,75 @@ public class DataApiSample {
 		conn.setDoOutput(true);
 		conn.setDoInput(true);
 		conn.setConnectTimeout(10000);
-		conn.setRequestProperty("Content-type", "multipart/form-data; boundary=" + boundary);
+		conn.setRequestProperty("Content-Type", "multipart/form-data; boundary="+ boundary);
 		conn.setRequestProperty("Cache-Control", "no-cache");
 		/* 설정 끝 --------------------- */
 
-		OutputStream outputStream = conn.getOutputStream();
-		PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
-
-		/* 이미지 첨부 시작 --- */
+		out = conn.getOutputStream();
+		writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true);
+		
 		try {
-			for (File file : fileList) {
-				writer.append("--" + boundary).append("\r\n");
-				writer.append("Content-Disposition: form-data; name=\"image\"; filename=\"" + file.getName() + "\"").append("\r\n");
-				writer.append("Content-Type: image/jpeg").append("\r\n");
-				writer.append("\r\n");
-				writer.flush();
+			/* 이미지 첨부 시작 --- */
+			// body data ----------
+			addFile(file);
 
-				FileInputStream inputStream = new FileInputStream(file);
-				byte[] buffer = new byte[(int) file.length()];
-				int bytesRead = -1;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-				outputStream.flush();
-				inputStream.close();
-				writer.append("\r\n");
-				writer.flush();
-			}
-
-			writer.append("--" + boundary + "--").append("\r\n");
+			writer.append("--").append(boundary).append("--").append(LINE);
 			writer.close();
-		} catch (Exception e){
-			log.error(e.getMessage());
-		}
-		/* 이미지첨부 끝 ---- */
+			/* 이미지첨부 끝 ---- */
 
-		int responseCode = ((HttpURLConnection) conn).getResponseCode();
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String inputLine = "";
-		StringBuffer response = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-		try {
-			result = response.toString();
+			// 응답확인 -------------
+			int responseCode = ((HttpURLConnection) conn).getResponseCode();
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+			String inputLine = "";
+			StringBuffer responseStr = new StringBuffer();
+			while((inputLine = reader.readLine())!= null) {
+				responseStr.append(inputLine);
+			}
+			reader.close();
+			try {
+				result = responseStr.toString();
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
+			log.error(e.getMessage(), e);
+		}  
+		return result;
 	}
+    
+    /**
+	 * <pre>
+	 * 	파일 추가 메서드 분리
+	 * </pre>
+	 * 
+	 * @param boundary
+	 * @param _file
+	 * @throws IOException
+	 */
+    private static void addFile(String boundary, File _file) throws IOException{// Send File
+    	if(!_file.exists()) {
+    		log.info("file does not exist!!!!!!");
+    	} else {
+    		log.info(_file.getPath());
+    	}
+        writer.append("--").append(boundary).append(LINE);
+        writer.append("Content-Disposition: form-data; name=\"image\"; filename=\"" + _file.getName() + "\"").append(LINE);
+        writer.append("Content-Type: image/png").append(LINE);
+        writer.append("Content-Transfer-Encoding: binary").append(LINE);
+        writer.append(LINE);
+        writer.flush();
+         
+        FileInputStream inputStream = new FileInputStream(_file);
+        byte[] buffer = new byte[(int)_file.length()];
+        int bytesRead = -1;
+        while((bytesRead = inputStream.read(buffer)) != -1){
+            out.write(buffer, 0, bytesRead);
+        }
+        out.flush();
+        inputStream.close();
+         
+        writer.append(LINE).flush();
+    }
 }
