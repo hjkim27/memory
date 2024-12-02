@@ -1,4 +1,4 @@
-package kr.co.privacycenter.mapper;
+package sample.redis;
 
 import java.util.Collection;
 import java.util.Date;
@@ -15,7 +15,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
-import kr.co.privacycenter.exception.RedisException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,7 +42,7 @@ public class RedisRepository {
     private final ZSetOperations<String, String> stringStringZSetOperations;
     private final SetOperations<String, String> stringStringSetOperations;
 
-    public static String getPrivateDBName(String domain) throws RedisException {
+    public static String getPrivateDBName(String domain) throws Exception {
     	try {
             String value = stringRedisTemplate2.opsForValue().get("db/"+domain);
             return value;
@@ -52,14 +51,14 @@ public class RedisRepository {
         }
     }
     
-    public void set(String key, String value, long expire) throws RedisException {
+    public void set(String key, String value, long expire) throws Exception {
         try {
             stringRedisTemplate.opsForValue().set(key, value, expire, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw e;
         }    }
     
-    public void set(String key, String value) throws RedisException {
+    public void set(String key, String value) throws Exception {
     	try {
     		stringRedisTemplate.opsForValue().set(key, value);
     	} catch (Exception e) {
@@ -67,7 +66,7 @@ public class RedisRepository {
     	}
     }
 
-    public String get(String key) throws RedisException {
+    public String get(String key) throws Exception {
         try {
             String value = stringRedisTemplate.opsForValue().get(key);
             return value;
@@ -76,7 +75,7 @@ public class RedisRepository {
         }
     }
 
-    public Boolean expireAt(String key, Date date) throws RedisException {
+    public Boolean expireAt(String key, Date date) throws Exception {
         try {
             return stringRedisTemplate.expireAt(key, date);
         } catch (Exception e) {
@@ -84,7 +83,7 @@ public class RedisRepository {
         }
     }
 
-    public long deleteByKey(String key) throws RedisException {
+    public long deleteByKey(String key) throws Exception {
         try {
             if (stringRedisTemplate.delete(key)) {
                 return 1;
@@ -96,7 +95,7 @@ public class RedisRepository {
         }
     }
 
-    public long deleteByKeys(Collection<String> keys) throws RedisException {
+    public long deleteByKeys(Collection<String> keys) throws Exception {
         try {
             return stringRedisTemplate.delete(keys);
         } catch (Exception e) {
@@ -104,7 +103,7 @@ public class RedisRepository {
         }
     }
 
-    public long delete(Collection<String> keys) throws RedisException {
+    public long delete(Collection<String> keys) throws Exception {
         try {
             return stringRedisTemplate.delete(keys);
         } catch (Exception e) {
@@ -112,7 +111,7 @@ public class RedisRepository {
         }
     }
 
-    public Set<String> getPatternKey(String pattern) throws RedisException {
+    public Set<String> getPatternKey(String pattern) throws Exception {
         try {
             return stringRedisTemplate.keys(pattern);
         } catch (Exception e) {
@@ -120,7 +119,7 @@ public class RedisRepository {
         }
     }
 
-    public void renameKey(String oldKey, String newKey) throws RedisException {
+    public void renameKey(String oldKey, String newKey) throws Exception {
         try {
             stringRedisTemplate.rename(oldKey, newKey);
         } catch (Exception e) {
@@ -128,7 +127,7 @@ public class RedisRepository {
         }
     }
 
-    public DataType getKeyType(String key) throws RedisException {
+    public DataType getKeyType(String key) throws Exception {
         try {
             return stringRedisTemplate.type(key);
         } catch (Exception e) {
@@ -137,7 +136,7 @@ public class RedisRepository {
 
     }
 
-    public boolean setFromMap(Map<String, String> map) throws RedisException {
+    public boolean setFromMap(Map<String, String> map) throws Exception {
         try {
             return Boolean.TRUE.equals(stringRedisTemplate.opsForValue().multiSetIfAbsent(map));
         } catch (Exception e) {
@@ -145,7 +144,7 @@ public class RedisRepository {
         }
     }
 
-    public Map<Object, Object> hGetAll(String key) throws RedisException {
+    public Map<Object, Object> hGetAll(String key) throws Exception {
         try {
             return stringObjectObjectHashOperations.entries(key);
         } catch (Exception e) {
@@ -153,7 +152,7 @@ public class RedisRepository {
         }
     }
 
-    public void hPutAll(String key, Map<String, String> maps) throws RedisException {
+    public void hPutAll(String key, Map<String, String> maps) throws Exception {
         try {
             stringObjectObjectHashOperations.putAll(key, maps);
         } catch (Exception e) {
@@ -161,7 +160,7 @@ public class RedisRepository {
         }
     }
 
-    public void hPut(String key, String hashKey, String value) throws RedisException {
+    public void hPut(String key, String hashKey, String value) throws Exception {
         try {
             stringObjectObjectHashOperations.put(key, hashKey, value);
         } catch (Exception e) {
@@ -169,7 +168,7 @@ public class RedisRepository {
         }
     }
 
-    public boolean hashExists(String key, String field) throws RedisException {
+    public boolean hashExists(String key, String field) throws Exception {
         try {
             return stringObjectObjectHashOperations.hasKey(key, field);
         } catch (Exception e) {
@@ -178,7 +177,7 @@ public class RedisRepository {
 
     }
 
-    public Set<Object> getHashFields(String key) throws RedisException {
+    public Set<Object> getHashFields(String key) throws Exception {
         try {
             return stringObjectObjectHashOperations.keys(key);
         } catch (Exception e) {
@@ -187,7 +186,7 @@ public class RedisRepository {
 
     }
 
-    public List<Object> hValues(String key) throws RedisException {
+    public List<Object> hValues(String key) throws Exception {
         try {
             return stringObjectObjectHashOperations.values(key);
         } catch (Exception e) {
@@ -195,7 +194,7 @@ public class RedisRepository {
         }
     }
     
-    public void delInbound(String domain, int port) throws RedisException {
+    public void delInbound(String domain, int port) throws Exception {
     	log.debug("delete policy/inbound/"+domain +"\t, dupl/inbound/"+domain);
     	deleteByKey("policy/inbound/"+domain);
     	deleteByKey("dupl/inbound/"+domain);
@@ -206,7 +205,7 @@ public class RedisRepository {
     	}
     	
     }
-    public void delOutbound(String domain, int port) throws RedisException {
+    public void delOutbound(String domain, int port) throws Exception {
     	log.debug("delete policy/outbound/"+domain +"\t, dupl/outbound/"+domain);
     	deleteByKey("policy/outbound/"+domain);
     	if(port != -1) {
@@ -215,17 +214,17 @@ public class RedisRepository {
     	}
     }
     
-    public void setInbound(String domain) throws RedisException {
+    public void setInbound(String domain) throws Exception {
     	log.debug("set policy/inbound/"+domain);
     	set("policy/inbound/"+domain, domain);
     }
-    public void setOutbound(String domain) throws RedisException {
+    public void setOutbound(String domain) throws Exception {
     	log.debug("set policy/outbound/"+domain);
     	set("policy/outbound/"+domain, domain);
     }
     
     // hjkim [2022.10.14] 필터링웹서버 추가/수정 시 "db/domain:port" 를 set/del 하도록 추가 
-    public void setFilteringServerDomain(String domain, Integer port, Integer id) throws RedisException {
+    public void setFilteringServerDomain(String domain, Integer port, Integer id) throws Exception {
     	log.debug("set db/"+domain);
     	set(String.valueOf("db/"+domain), String.valueOf("privacycenter_"+id));
     	if(port!= -1) {
@@ -236,7 +235,7 @@ public class RedisRepository {
 //    	set(String.valueOf("db/"+domain+":"+port), "privacycenter_master");
     }
     
-    public void delFilteringServerDomain(String domain, Integer port, boolean deleteCheck) throws RedisException {
+    public void delFilteringServerDomain(String domain, Integer port, boolean deleteCheck) throws Exception {
     	if(deleteCheck) {
     		log.debug("delete db/"+domain);
     		deleteByKey("db/"+domain);
