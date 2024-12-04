@@ -16,7 +16,8 @@ root$ su postgres -c "createDB [DB명] --lc-collate='C' -T template0"
 root$ su postgres -c "psql [DB명] < ./dump.sql"
 ```
 
-### postgres 권한 부여
+## 명령어
+### postgres 계정 변경
 ```bash
 su postgres
 ```
@@ -50,40 +51,22 @@ psql -h pg-14jhe.vpc-cdb-kr.gov-ntruss.com -p 5432 -U comtrue -d privacycenter_l
 psql -h pg-14jhe.vpc-cdb-kr.gov-ntruss.com -p 5432 -U root -d privacycenter_master
 ```
 
-
-
-
-pg_dump -U root  -O --column-inserts -E UTF8 privacycenter_8 > pv.sql
-su postgres -c "createdb privacycenter --lc-collate='C' -T template0"
-su postgres -c "psql privacycenter < ./0812dump.sql"
-pg_dump -U root  -t pcscan_detail_result -O --column-insert -E UTF8 shpc_no_login > test.sql
-
+## DB backup(dump)
 pg_dump -U [계정명] -t [테이블명] -a -O --inserts -E UTF8 [데이터베이스명] > dump.sql
+```bash
+# example
+pg_dump -U root -O -E UTF8 [DB명] > ./dump.sql
+```
+### dump option
+| option   | mean               | description                           | 
+|----------|--------------------|---------------------------------------|
+|-U        |--username=NAME     | connect as specified database user    |
+|-t        |--table=TABLE       | dump the named table(s) only          |
+|-a        |--data-only         | dump only the data, not the schema    |
+|-O        |--no-owner          | skip restoration of object ownership in plain-text format |
+|--inserts |                    | dump data as INSERT commands, rather than COPY  |
+|-E        |--encoding=ENCODING | dump the data in encoding ENCODING |
 
-pg_dump -U root -t pcscan_detail_result -O --inserts -E UTF8 shpc > table.sql
+## DB rollback
 
-pg_dump -U root -s -O -E UTF8 crm  > dump.sql
-pg_dump -U root -a -t t_module -O -E UTF8 crm  > t_module.sql
-pg_dump -U root  -t filtering_basic_option -a -O --column-inserts -E UTF8 privacycenter > dumpinsert.sql
-su postgres -c "psql crm2 < ./t_module.sql"
-
-su postgres -c "psql privacycenter_8 < ./dumpinsert.sql"
-
-delete from pcscan_result;
-delete from pcscan_current_result;
-delete from pcscan_treat_current_result;
-
-[option 참고]
-
--U, --username=NAME      connect as specified database user
-
--t, --table=TABLE            dump the named table(s) only
-
--a, --data-only              dump only the data, not the schema
-
--O, --no-owner               skip restoration of object ownership in
-                               plain-text format
-
---inserts                    dump data as INSERT commands, rather than COPY
-
--E, --encoding=ENCODING      dump the data in encoding ENCODING
+psql [DB명] < ./dump.sql
