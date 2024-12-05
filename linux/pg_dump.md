@@ -70,3 +70,33 @@ pg_dump -U root -O -E UTF8 [DB명] > ./dump.sql
 ## DB rollback
 
 psql [DB명] < ./dump.sql
+
+
+# DB에서 값을 조회해 csv 파일로 저장하기
+```bash
+#!/bin/bash
+
+if [ $# -ne 1 ] 
+then
+    echo "No argument supplied"
+    echo "./save_face_image.sh YYYY-MM-DD"
+    exit
+fi
+STARTDATE=$1
+
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_PASSWD='privacy!@34'
+
+FILE_NAME=/tmp/save_image/faceData.csv
+
+# 아래와 같이 쿼리문을 바로 조회해도 됨.
+## ex)
+psql -d '{DB명}' -c "\COPY ({select 쿼리}) TO '{파일이름}' {확장자};";
+
+## 실제 실행 코드
+psql -d 'face_aidee' -c "\COPY (select concat(name,'_', id), data from ( select  t_img.id, t_upt.name, t_img.data from (select id, user_id, image_id, face_id from checkin_event where created_at >= '$STARTDATE') t_check left join ( select user_id, replace(data, ' ', '_') as name from user_property where user_property_type_id=1 ) t_upt on t_check.user_id = t_upt.user_id left join ( select id, data from image ) t_img on t_check.image_id = t_img.id union select  t_img.id, t_upt.name, t_img.data from (select id, user_id, image_id from face where created_at >= '$STARTDATE') t_face left join ( select user_id, replace(data, ' ', '_') as name from user_property where user_property_type_id=1 ) t_upt on t_face.user_id = t_upt.user_id left join ( select id, data from image) t_img on t_face.image_id = t_img.id	 ) b ) TO '$FILE_NAME' csv;";
+
+# rm /tmp/save_image/image/*
+# java -jar /tmp/save_image/saveFace-1.0-jar-with-dependencies.jar
+```
