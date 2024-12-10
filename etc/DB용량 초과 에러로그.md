@@ -1,4 +1,5 @@
-tomcat catalina.out
+# DB 용량 초과 시 확인 에러 코드
+## 확인 파일 :  `tomcat/logs/catalina.out`
 디스크 용량이 다 차서 발생하는 문제로 확인    
 용량 확보 후 정상 동작 확인 완료
 ```
