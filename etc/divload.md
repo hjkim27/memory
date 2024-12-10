@@ -14,7 +14,7 @@ function importPage(url){
 }
 ```
 
-## ekyc : div Camera호출
+## example 
 
 - div.load(url) 함수 작업 
     ```javascript
@@ -34,7 +34,7 @@ function importPage(url){
         });
     }
 
-    # 함수 재정의
+    // 함수 재정의
     function start2(){
         alert("start2");
         uu = path+'/verification/'+vid2;
