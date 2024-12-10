@@ -1,4 +1,4 @@
-1. display태그 제거시 옵션 확인
+# `<display>` 제거 시 옵션 확인
    
 |option | description |
 |---|---|
