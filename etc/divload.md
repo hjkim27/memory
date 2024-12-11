@@ -1,3 +1,4 @@
+# `div.laod()` sample example
 ## view 페이지 div 안에 출력
 
 - [load 문서](https://api.jquery.com/load/)
