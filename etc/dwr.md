@@ -1,3 +1,25 @@
+# DWR (Direct Web Remoting)
+-  프록시 기반 Ajax 로 Javascript 에서 Java Class 의 메서드를 사용할 수 있도록 해주는 프레임워크
+
+## 필요 이유
+1. 자바스크립트는 브라우저와 같은 클라이언트 단에서 동작
+2. 자바로직은 서버 단에서 동작
+3. 처리하는 방법은 Ajax 를 통해 다른 jsp에서 자바 로직을 처리하고, 콜백해서 처리
+4. 위와 같은 과정을 좀 더 편리하게 해 줄 수 있어 보임
+
+** 현재는 잘 사용하지 않음
+
+## lib
+```xml
+<!-- https://mvnrepository.com/artifact/org.directwebremoting/dwr -->
+<dependency>
+    <groupId>org.directwebremoting</groupId>
+    <artifactId>dwr</artifactId>
+    <version>3.0.2-RELEASE</version>
+    <type>pom</type>
+</dependency>
+```
+
 ## dwr로 사용중이던 ajax 제거 후 변경
   1) 값 전달 오류 : list 로 된 값이 jquery 에서 controller 로 전달되지 않음 > dataType: "json" 추가
   2) url 오류 : 호출 url에서 shpc 가 같이 출력되지 않음 > ${contextPath} 추가
