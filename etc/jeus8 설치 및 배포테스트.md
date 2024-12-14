@@ -1,18 +1,24 @@
 
 # java.library.path 확인
 ```bash
-    # 터미널에서 java 관련 환경변수 확인
-    java -XshowSettings:properties -version
+# 터미널에서 java 관련 환경변수 확인
+java -XshowSettings:properties -version
 ```
 
 # jeus8 설치
 - jdk1.7 이상
 - 업로드 파일 실행
 
-#### 1. [jeus8 설치](https://velog.io/@chrisantus/Linux-JEUS-8-%EC%84%A4%EC%B9%98)
-
-#### 2. 환경변수 적용(설치 후 JEUS_PATH가 자동으로 갱신되므로 적용 필요)
+#### 1. 환경변수 적용(설치 후 JEUS_PATH가 자동으로 갱신되므로 적용 필요)
+```bash
+    # vi ~/.bash_profile ** 맨 아래 추가
+    export JAVA_HOME=/usr/jdk/jdk-8u191
+    export PATH=$JAVA_HOME/bin:$PATH
+    export JEUS_HOME=/home/jeus
+```
 - source ~/.bash_profile
+
+#### 2. [jeus8 설치](https://velog.io/@chrisantus/Linux-JEUS-8-%EC%84%A4%EC%B9%98)
 
 #### 3. license 적용
 -  [license 발급](https://technet.tmaxsoft.com/ko/front/main/main.do)
@@ -20,31 +26,45 @@
 	- Host Name :: 서버 hostname 확인 후 적을 것 (localhost.localadmin)
 
 #### 4. [jeus 실행](https://blog.naver.com/tawoo0/221559022526)
--  DAS(Domain Admin Server) 시작
-	```
-	startDomainAdminServer -domain jeus_domain -u admin -p privacy
-	```
-- nodeManager 시작
-	```
-	nohup startNodeManager > /home/jeus/nodemanager/logs/nm.log &
-	```
-- MS(Managed Server) 시작/중지
-	```
-	startManagedServer -dasurl localhost:9736 -domain jeus_domain -server server1 -u admin -p privacy
-	```
+```bash
+#  DAS(Domain Admin Server) 시작
+startDomainAdminServer -domain jeus_domain -u admin -p privacy
+
+# nodeManager 시작
+nohup startNodeManager > /home/jeus/nodemanager/logs/nm.log &
+
+# MS(Managed Server) 시작/중지
+startManagedServer -dasurl localhost:9736 -domain jeus_domain -server server1 -u admin -p privacy
+```
 
 #### 5. 방화벽설정
 - 추가
-	```
+	```bash
+	# 방법1 (범위허용)
     firewall-cmd --add-port=9736-9800/tcp
-    firewall-cmd --runtime-to-permanent
+	firewall-cmd --runtime-to-permanent
     firewall-cmd --reload
+
+	# 방법2 (단일허용)
+	firewall-cmd --permanent --zone=public --add-port=80/tcp
+
+	# 방화벽 해제(사용하지 말 것)
+	systemctl stop firewalld
 	```
 
 - 추가확인
 	```
     firewall-cmd --list-port
 	```
+
+### 6. 관리페이지 접속
+http://[서버 IP]:9736/webadmin
+```
+# 로그인계정 : <id> / <password>    // id(default): administrator
+```
+
+** jeus 서버 추가 및 배포방법   https://hanjonghyuk.tistory.com/13
+
 
 ## ERROR.
 Server 시작 시 STANDBY 상태로 서버가 대기상태로 되는 상황
