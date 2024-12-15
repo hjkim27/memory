@@ -56,3 +56,15 @@
 <if test="noSave == false">
 </if>
 ```
+
+### 4. upsert 구문
+```sql
+-- insert 를 하는데 sid 가 충돌일 경우 update 진행
+insert into MY_TABLE (sid, id, key, value)
+values (#{sid}, #{id}, #{key}, #{value})
+on conflict (sid)
+do update set
+    id = #{id}
+    , key = #{key}
+    , value = #{value}
+```
