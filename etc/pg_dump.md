@@ -1,4 +1,4 @@
-# pg_dump 
+# pg_dump [postgresql]
 ## 명령어실행방법
 ### 1. postgres 으로 계정 변경 후 명령어만 입력
 ```bash
