@@ -68,3 +68,15 @@ do update set
     , key = #{key}
     , value = #{value}
 ```
+
+### 5. table, column 존재여부 확인
+```sql
+-- 테이블 존재여부 확인
+select count(*) from pg_tables where schemaname = 'public' and tablename = #{tableName}
+
+-- 특정 테이블에 해당 컬럼명이 있는지 확인
+select count(*) from information_schema.columns where table_name = #{tableName} and column_name = #{columnName}
+```
+- 참고URL
+    - [[PostgreSQL] query로 테이블 존재여부 판단](https://bloodguy.tistory.com/entry/PostgreSQL-query%EB%A1%9C-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%A1%B4%EC%9E%AC%EC%97%AC%EB%B6%80-%ED%8C%90%EB%8B%A8)
+    - [[postgresql][postgresql 컬럼 조회]컬럼 있는지 확인](https://blog.naver.com/angersadness/221120647555)
