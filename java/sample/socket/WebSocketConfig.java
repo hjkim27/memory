@@ -56,7 +56,7 @@ public class WebSocketConfig extends ServerEndpointConfig.Configurator implement
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
         container.setMaxTextMessageBufferSize(10000000);
         container.setMaxBinaryMessageBufferSize(10000000);
-        // TODO 10초이상 소켓이 안오면 죽도록 해뒀는데 동작하는지는 모르겠음. 확인 필요함.
+        // 10초이상 소켓이 안오면 closed
         container.setMaxSessionIdleTimeout(TimeUnit.SECONDS.toMillis(10));
         return container;
     }

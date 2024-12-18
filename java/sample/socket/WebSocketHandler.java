@@ -24,14 +24,11 @@ import java.util.*;
  *
  * @author hjkim
  */
+@Slf4j
 @Component
 @ServerEndpoint(value = "/socketConnection", configurator = WebSocketConfig.class)
 @NoArgsConstructor
 public class WebSocketHandler {
-
-    private static final Logger log = LoggerFactory.getLogger("WEB_LOGGER");
-
-    private static final Logger ERROR_LOGGER = LoggerFactory.getLogger("ERROR_LOGGER");
 
     private static Set<Session> CLIENTS = Collections.synchronizedSet(new HashSet<>());
 
