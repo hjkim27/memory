@@ -1,4 +1,4 @@
-package sample.socket;
+package sample.api.socket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

@@ -1,4 +1,4 @@
-package sample.redis;
+package sample.api;
 
 import java.util.Collection;
 import java.util.Date;

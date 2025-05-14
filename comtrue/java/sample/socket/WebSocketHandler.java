@@ -1,4 +1,4 @@
-package sample.socket;
+package sample.api.socket;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;

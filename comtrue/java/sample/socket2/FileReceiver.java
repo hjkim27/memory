@@ -1,4 +1,4 @@
-package sample.socket2;
+package sample.api.socket2;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
